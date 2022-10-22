@@ -7,10 +7,10 @@ class Client:
         self.host = host
         self.port = port
         self.server = self.host, self.port
-        self.nickname = input('Write your nickname: \n')
+        self.nickname = input('Write your nickname: ')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', 0))
-        self.sock.sendto((f'{self.nickname} has joined to server \n'.encode('utf-8')), self.server)
+        self.sock.sendto((f'{self.nickname} has joined to server'.encode('utf-8')), self.server)
 
         self.pool = threading.Thread(target=self._read_sock)
         self.pool.start()
@@ -23,10 +23,10 @@ class Client:
 
     def _send_sock(self):
         while True:
-            data = input('Write smth: \n')
+            data = input('Write smth: ')
             try:
                 self.sock.sendto(
-                    f'[{self.nickname}] {data}\n'.encode('utf-8'),
+                    f'[{self.nickname}] {data}'.encode('utf-8'),
                     self.server
                 )
             except Exception as ex:
