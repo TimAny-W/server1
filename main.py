@@ -1,6 +1,6 @@
 import socket
 import threading
-
+from server.logger import write_log
 
 class Server:
     def __init__(self, host: str, port: int):
@@ -14,14 +14,14 @@ class Server:
         sock.bind((self.host, self.port))
         clients_address = []
 
-        print('Server started')
+        print(write_log("Server started"))
         while True:
             data, address = sock.recvfrom(1024)
             if not data:
                 break
             if address not in clients_address:
                 clients_address.append(address)
-                print(f"Client {clients_address[-1]} has joined")
+                print(write_log(f"Client {clients_address[-1]} has joined"))
             for client_address in clients_address:
                 if client_address == address:
                     continue
