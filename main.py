@@ -51,5 +51,5 @@ class Server:
 if __name__ == '__main__':
     try:
         server = Server(host='127.0.0.1', port=9090)
-    except BaseException as e:
-        write_log(f'Server crashed with error: {}')
+    except BaseException as ex:
+        write_log(f'Server crashed with error: {repr(ex)}')
