@@ -1,56 +1,46 @@
 import sqlite3 as sq
 
-connection = sq.connect(f'accounts.db')
-cursor = connection.cursor()
+class DBManagerError(Exception):
+    pass
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS accounts(
-    id INT PRIMARY KEY,
-    login TEXT NOT NULL,
-    password TEXT NOT NULL 
-    );
-""")
-connection.commit()
-
-
-def encrypt_data(data):
-    """Encrypts the data
-    return encrypted data
-    need to realised
-    """
-    return data
-
-
-def decrypt_data(data):
-    """Decrypts the data
-    return decrypted data
-    need to realised"""
-    return data
+class DBManager:
+    def __init__(self, db_name: str):
+        self._db_name = db_name
+        
+    def open() -> bool:         
+        try:
+           self._connection = sq.connect(self._db_name)
+           self._cursor = connection.cursor()
+           return True 
+        except some_sqlite_exception:
+           return False 
+    
+    def create_table(self):
+        self._cursor.execute("""CREATE TABLE IF NOT EXISTS accounts(
+            id INT PRIMARY KEY,
+            login TEXT NOT NULL,
+            password TEXT NOT NULL 
+            );
+        """)
+        self._connection.commit()
 
 
-def register_accounts(id, login, password) -> str:
-    """Add account to database
-    return result of saving
-    """
-
-    try:
-        cursor.execute("""INSERT INTO accounts VALUES(?, ?, ?);""", encrypt_data(id, login, password))
-        connection.commit()
-    except BaseException as ex:
-        return f'Account saving error {repr(ex)}'
-    else:
-        return f'Account was successfully saved'
+    def register_accounts(self, id, login, password) -> bool:
+        try:
+            self._cursor.execute("INSERT INTO accounts VALUES(?, ?, ?);", encrypt_data(id, login, password))
+            self._connection.commit()
+        except some_sqlite_exception as ex:
+            return True  # or raise DBManagerError(e)
+        else:
+            return False
 
 
-def login(login, password):
-    """Def of login user
-    return True if login and password correct,else
-    return False if login and password incorrect
-    """
-    cursor.execute(f"""SELECT * from accounts WHERE login='{login}'""")
-    user = cursor.fetchall()
-    if decrypt_data(user[2]) != password:
-        return False
-    else:
-        return True
+    def login(self, login, password):
+        self._cursor.execute("SELECT * from accounts WHERE login=?", login)
+        user = self._cursor.fetchall()
+        if decrypt_data(user[2]) != password:
+            return False # or raise DBManagerError(e)
+        else:
+            return True
 
-print(login('tim', 'timany'))
+
