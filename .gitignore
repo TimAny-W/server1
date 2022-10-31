@@ -1,2 +1,5 @@
 /venv/
 .idea
+server/accounts.db
+logs.txt
+UI.py
