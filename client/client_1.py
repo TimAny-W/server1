@@ -1,20 +1,31 @@
 import socket
 import threading
+from socket_server.server.database import DBManager
+
+db = DBManager('accs.db')
 
 
 class Client:
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
+
         self.server = self.host, self.port
-        self.nickname = input('Write your nickname: ')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        self.login = ''
+
         self.sock.bind(('', 0))
-        self.sock.sendto((f'{self.nickname} has joined to server'.encode('utf-8')), self.server)
+
+        self._init()
+
+        self.sock.sendto((f'{self.login} has joined to server'.encode('utf-8')), self.server)
+
 
         self.pool = threading.Thread(target=self._read_sock)
+        self.pool2 = threading.Thread(target=self._send_sock)
         self.pool.start()
-        self._send_sock()
+        self.pool2.start()
 
     def _read_sock(self):
         while True:
@@ -26,11 +37,31 @@ class Client:
             data = input('Write smth: ')
             try:
                 self.sock.sendto(
-                    f'[{self.nickname}] {data}'.encode('utf-8'),
+                    f'\n[{self.login}] {data}'.encode('utf-8'),
                     self.server
                 )
             except Exception as ex:
                 print(repr(ex))
+
+    # ///////////// REGISTRATION ///////////////
+
+    def _init(self):
+        choice = int(input("Choice login or register\n login - 1 \n register - 2\n"))
+        self.login = input('Write a login: ')
+        password = input('Write a password:')
+
+        if choice == 1:
+            if not db.login(self.login, password):
+                print('Password or login incorrect')
+                return self._init()
+            else:
+                print('Login successfully')
+        elif choice == 2:
+            if not db.register_account(self.login, password):
+                print('Login is not available')
+                return self._init()
+            else:
+                print('Successfully register a new account')
 
 
 if __name__ == '__main__':

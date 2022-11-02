@@ -7,6 +7,6 @@ def write_log(data) -> str:
         return original data
     """
     with open(fr'logs.txt', 'a+') as f:
-        f.write(f'{data} ||{datetime.datetime.now()}||\n')
-    return f'{data} ||{datetime.datetime.now()}||\n'
+        f.write(f'{data} || {datetime.datetime.now()}||\n')
+    return f'{data} || {datetime.datetime.now()}||\n'
 

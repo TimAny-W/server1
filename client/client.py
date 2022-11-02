@@ -16,11 +16,15 @@ class Client:
         self.login = ''
 
         self.sock.bind(('', 0))
+
         self._init()
-        # self.sock.sendto((f'{self.nickname} has joined to server'.encode('utf-8')), self.server)
+
+        self.sock.sendto((f'{self.login} has joined to server'.encode('utf-8')), self.server)
 
         self.pool = threading.Thread(target=self._read_sock)
+        self.pool2 = threading.Thread(target=self._send_sock)
         self.pool.start()
+        self.pool2.start()
 
     def _read_sock(self):
         while True:
@@ -32,7 +36,7 @@ class Client:
             data = input('Write smth: ')
             try:
                 self.sock.sendto(
-                    f'[{self.login}] {data}\n'.encode('utf-8'),
+                    f'\n[{self.login}] {data}'.encode('utf-8'),
                     self.server
                 )
             except Exception as ex:
@@ -57,9 +61,6 @@ class Client:
                 return self._init()
             else:
                 print('Successfully register a new account')
-
-        self._send_sock()
-        self._read_sock()
 
 
 if __name__ == '__main__':

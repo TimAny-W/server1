@@ -15,22 +15,20 @@ class Server:
         self.pool = threading.Thread(target=self._server)
         self.pool.start()
 
-        self.clients_address = []
-
     def _server(self):
         print(write_log("Server started"))
+        clients_address = []
         while True:
             data, address = self.sock.recvfrom(1024)
-            self._commands(data, address)
-            if not data:
-                break
-            if address not in self.clients_address:
-                self.clients_address.append(address)
-                print(write_log(f"Client {self.clients_address[-1]} has joined"))
-            for client_address in self.clients_address:
-                if client_address == address:
+            print(address[0], address[1])
+            if address not in clients_address:
+                clients_address.append(address)
+                print(clients_address)
+            for clients in clients_address:
+                if clients == address:
                     continue
-                self.sock.sendto(data, client_address)
+                self.sock.sendto(data, clients)
+                print(data, clients)
         self.sock.close()
 
     def _commands(self, data, address):
